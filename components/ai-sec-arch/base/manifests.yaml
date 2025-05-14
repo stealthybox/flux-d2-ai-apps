@@ -1,0 +1,29 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: manifests
+spec:
+  interval: 1h
+  url: oci://ghcr.io/stealthybox/ai-security-architecture/manifests
+  ref:
+    tag: v0.0.1 # TODO: ### {"$imagepolicy": "apps:ai-sec-arch-manifests:tag"}
+  verify:
+    provider: cosign
+    matchOIDCIdentity:
+    - issuer: ^https://token\.actions\.githubusercontent\.com$
+      subject: ^https://github\.com/stealthybox/ai-security-architecture/\.github/workflows/release-artifact\.yaml@refs/tags/manifests/v\d+\.\d+\.\d+$
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: manifests
+spec:
+  sourceRef:
+    kind: OCIRepository
+    name: manifests
+  serviceAccountName: flux
+  interval: 30m
+  retryInterval: 5m
+  wait: true
+  timeout: 5m
+  prune: true

@@ -12,6 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         component:
+          - ai-sec-arch
           - backend
           - frontend
     runs-on: ubuntu-latest
